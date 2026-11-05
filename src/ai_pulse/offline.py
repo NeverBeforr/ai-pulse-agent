@@ -1,34 +1,58 @@
-"""离线演示使用固定样本，不构造网络或模型客户端。"""
+"""回放历史材料与已录制的中文结果，不构造网络或模型客户端。"""
 
+import json
+from datetime import datetime
 from importlib.resources import files
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
-from .digest import preview_digest
-from .editorial import section_for_entry
-from .sources.rss import parse_feed
+from .digest import rank_candidates
+from .models import BriefingDigest
+from .sources.hn import parse_stories
+from .storage import Store
 
 
 def fixture_root():
-    checkout = Path(__file__).resolve().parents[2] / "tests/fixtures"
-    return checkout if checkout.is_dir() else files("ai_pulse").joinpath("fixtures")
+    return files("ai_pulse").joinpath("fixtures")
 
 
 def fixture_digest():
-    items = parse_feed(fixture_root().joinpath("rss_zh.xml").read_text(encoding="utf-8"))
-    candidates = [
-        dict(
-            item.model_dump(),
-            id=index,
-            section=section_for_entry(item.model_dump()),
-            growth=None,
-            sources=[{"id": 0, "name": "内置离线样本", "channel": "示例"}],
+    root = fixture_root()
+    manifest = json.loads(root.joinpath("replay.json").read_text(encoding="utf-8"))
+    stories = json.loads(root.joinpath("replay_hn.json").read_text(encoding="utf-8"))
+    recorded = BriefingDigest.model_validate_json(
+        root.joinpath("model_output.json").read_text(encoding="utf-8")
+    )
+    source = manifest["source"]
+    with TemporaryDirectory(prefix="pulse-replay-") as directory:
+        # 真实存储与排序只操作临时库，不读取或修改用户的状态库。
+        store = Store(Path(directory))
+        store.seed_sources([source])
+        for item in parse_stories(stories):
+            store.save_item(item.model_dump(), 1)
+        candidates = rank_candidates(
+            store.entries(), store, set(), now=datetime.fromisoformat(manifest["created_at"])
         )
-        for index, item in enumerate(items, 1)
-    ]
-    selected = preview_digest(candidates)
+    allowed = {item["id"]: item for item in candidates}
+    selected = []
+    for chosen in recorded.items:
+        original = allowed[chosen.entry_id]
+        evidence = [allowed[identity] for identity in chosen.evidence_ids]
+        selected.append(
+            dict(
+                {key: original[key] for key in ("url", "kind", "published_at", "metrics", "growth", "sources")},
+                entry_id=chosen.entry_id,
+                section=chosen.section,
+                title=chosen.title,
+                summary=chosen.summary,
+                reason=chosen.reason,
+                evidence_status=chosen.evidence_status,
+                evidence=[{"title": item["title"], "url": item["url"]} for item in evidence],
+            )
+        )
     return {
-        "local_date": "2026-11-01",
-        "created_at": "2026-11-01T00:00:00+00:00",
+        "local_date": manifest["date"],
+        "created_at": manifest["created_at"],
         "timezone": "Asia/Hong_Kong",
         "mode": "demo",
         "offline": True,
@@ -36,7 +60,7 @@ def fixture_digest():
         "coverage": {
             "successful": 1,
             "total": 1,
-            "results": [{"source": "离线样本", "ok": True}],
-            "last_success": None,
+            "results": [{"source": source["name"], "ok": True, "count": len(stories)}],
+            "last_success": manifest["created_at"],
         },
     }

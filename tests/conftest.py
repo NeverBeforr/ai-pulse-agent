@@ -36,6 +36,8 @@ def offline_only(monkeypatch):
         "IMAP_USER",
         "IMAP_PASSWORD",
         "GITHUB_TOKEN",
+        "GH_TOKEN",
+        "PULSE_CONFIG",
     ):
         monkeypatch.delenv(key, raising=False)
 

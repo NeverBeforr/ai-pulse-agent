@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-30",
+  "created_at": "2026-10-30T09:53:25.633656+00:00",
+  "origin": "旧版v0.2真实简报的公开资讯与中文输出，不是今天的新资讯或本次模型调用",
+  "capture": "HN材料由当时保存的标题、链接、正文和热度导出为规范化响应，不是原始HTTP响应包；原条目ID按回放顺序重新编号",
+  "editorial_adjustment": "保留原摘要与理由，将Algeon归入行业热点以符合v0.3每板块最多3条的配额；历史素材不证明新版本的单次模型生成质量",
+  "source": {
+    "name": "Hacker News",
+    "kind": "hn",
+    "url": "https://news.ycombinator.com/",
+    "channel": "社区公开API",
+    "enabled": true,
+    "state": "ok",
+    "message": "历史回放材料"
+  }
+}

@@ -30,6 +30,7 @@ def test_summary_is_capped_and_card_is_bounded():
 
 def test_card_time_uses_configured_timezone():
     digest = fixture_digest()
+    digest["created_at"] = "2026-10-30T00:00:00+00:00"
     note = render_card(digest, digest["items"])["card"]["elements"][-1]["elements"][0]["content"]
     assert "生成 08:00" in note
     digest["timezone"] = "UTC"
@@ -121,5 +122,5 @@ async def test_markdown_is_overwritten(tmp_path):
     digest = fixture_digest()
     await sink.send(digest, digest["items"])
     await sink.send(digest, digest["items"])
-    text = (tmp_path / "2026-11-01.md").read_text(encoding="utf-8")
+    text = (tmp_path / f"{digest['local_date']}.md").read_text(encoding="utf-8")
     assert text.count("# Pulse 每日简报") == 1 and "coverage:" in text

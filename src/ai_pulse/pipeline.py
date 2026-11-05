@@ -275,19 +275,17 @@ def offline_preview(config):
     # 离线命令只读取本地样本，不构造网络客户端、不投递、不写入去重表。
     digest = fixture_digest()
     digest["offline"] = True
-    digest["coverage"] = {
-        "successful": 0,
-        "total": sum(s.enabled for s in config.sources),
-        "results": [],
-        "last_success": None,
-    }
     digest["items"] = digest["items"][: config.output.items]
     return RunResult(
         0,
         "preview",
-        coverage=dict(digest["coverage"], checked=False),
+        coverage={
+            "checked": False,
+            "configured_sources": sum(s.enabled for s in config.sources),
+            "recorded": digest["coverage"],
+        },
         markdown=render_markdown(digest, digest["items"]),
-        message="离线样本预览；未绑定环境变量：" + ", ".join(config._unbound_env),
+        message="历史简报离线回放，当前来源未检查；未绑定环境变量：" + ", ".join(config._unbound_env),
     )
 
 

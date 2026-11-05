@@ -1,0 +1,59 @@
+{
+  "items": [
+    {
+      "section": "industry",
+      "title": "YC用50个GPT-6.1智能体测试群体协作行为",
+      "summary": "YC Labs在Minecraft中让50个GPT-6.1智能体共同建设文明，运行3小时并发送约5900条消息。智能体自行形成领导层、分配制度和粮食账本，但首夜有22个智能体死亡，随后明显转向避险和集中管理。",
+      "reason": "展示多智能体协作从分工到治理的真实涌现过程",
+      "evidence_status": "材料有限",
+      "entry_id": 1,
+      "evidence_ids": [
+        1
+      ]
+    },
+    {
+      "section": "products",
+      "title": "Simantic让AI智能体在虚拟硬件上验证固件",
+      "summary": "Simantic面向嵌入式、机器人、汽车和卫星团队，提供可通过API调用的虚拟开发板、固件AI审查器和硬件CI流水线。它用Rust自研模拟器，并以真实芯片验证模型精度，支持部分STM32、ESP32和RP2040型号。",
+      "reason": "把固件测试从烧板等待变成可自动运行的验证循环",
+      "evidence_status": "材料有限",
+      "entry_id": 2,
+      "evidence_ids": [
+        2
+      ]
+    },
+    {
+      "section": "products",
+      "title": "Fabivo把家具照片转换成可编辑的裁切清单",
+      "summary": "Fabivo面向木工和家具设计者，允许用户在浏览器中手绘家具、选择模板，或上传照片让AI生成毫米级参数化模型。模型可继续编辑并输出编号裁切清单，目标是把一张参考图直接转成可执行的制作方案。",
+      "reason": "把图像理解连接到参数化建模和实际下料流程",
+      "evidence_status": "材料有限",
+      "entry_id": 3,
+      "evidence_ids": [
+        3
+      ]
+    },
+    {
+      "section": "products",
+      "title": "Cirkit让电子工程师直接在原理图PDF中问AI",
+      "summary": "Cirkit面向电子工程师，把原理图PDF变成可搜索、可批注的工作区。用户能在图纸内追踪跨板信号、查询DigiKey元件数据、查看嵌入式BOM，并直接询问AI电路关系，减少在文档、数据手册和元件库之间切换。",
+      "reason": "将电路文档阅读、元件查询和信号追踪合并到同一界面",
+      "evidence_status": "材料有限",
+      "entry_id": 4,
+      "evidence_ids": [
+        4
+      ]
+    },
+    {
+      "section": "industry",
+      "title": "Algeon用SQL调用GPU图、向量和机器学习算法",
+      "summary": "Algeon基于Apache DataFusion，把NVIDIA cuGraph、cuVS和cuML封装成SQL表函数。数据团队和智能体可以在同一条查询中组合过滤、连接、聚合、图分析、向量搜索与机器学习，减少传统GPU分析所需的ETL和Python胶水代码。",
+      "reason": "让智能体用声明式SQL迭代复杂GPU数据分析任务",
+      "evidence_status": "材料有限",
+      "entry_id": 5,
+      "evidence_ids": [
+        5
+      ]
+    }
+  ]
+}

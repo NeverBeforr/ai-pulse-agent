@@ -1,0 +1,27 @@
+name: 报告问题
+description: 提供可以复现的错误与脱敏日志
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: 请勿提交真实API Key、Webhook或邮箱授权码。安全漏洞请通过SECURITY.md中的私密入口报告。
+  - type: input
+    id: version
+    attributes:
+      label: 版本与运行环境
+      description: 版本或commit、Python版本、本机或Actions
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤与预期行为
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际结果、退出码与脱敏日志
+      description: 保留失败信息，删除所有凭据和私人内容。
+    validations:
+      required: true

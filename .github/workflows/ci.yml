@@ -7,13 +7,18 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: ${{ matrix.python-version }}
       - run: pip install '.[dev]'
       - run: pytest -q
       - run: ruff check .
       - run: pulse demo
+      - run: python -m ai_pulse demo
       - run: pulse run --dry-run --config tests/fixtures/pulse.yaml

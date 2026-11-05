@@ -1,14 +1,20 @@
 # Pulse
 
+[![离线检查](https://github.com/NeverBeforr/ai-pulse-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/NeverBeforr/ai-pulse-agent/actions/workflows/ci.yml)
+
 每天北京时间约8点，最多5条、每条最多140字的中文AI简报，推到你自己的飞书。
 
-<img src="docs/assets/card.png" width="640" alt="飞书卡片离线预览，未向真实机器人投递">
+<img src="docs/assets/card.png" width="640" alt="2026年10月30日真实简报的历史回放卡片">
+
+历史简报回放，由飞书payload离线渲染；不是今天的新资讯或真实群聊送达截图。[查看回放来源](docs/demo.md)
 
 ```bash
-uvx --from . pulse demo
+uvx --from git+https://github.com/NeverBeforr/ai-pulse-agent@v0.3.0 pulse demo
 ```
 
 部署：[Fork → 配置2个Secrets和2个Variables → 手动验证 → 开启每日Actions](docs/quickstart-actions.md)
+
+试读命令无需clone或密钥；首次安装会下载代码和依赖，安装后的回放不联网。当前从Git标签分发，PyPI发布尚待后续。
 
 ---
 
@@ -21,7 +27,8 @@ uvx --from . pulse demo
 ## 命令
 
 ```bash
-pulse demo                         # 离线样本，不需要密钥
+pulse demo                         # 回放历史真实简报，不需要密钥
+python -m ai_pulse demo            # 同一CLI入口，不启动Web
 pulse run --dry-run                # 严格离线预览，不投递、不写去重状态
 pulse check                       # 校验真实配置与环境变量，不探测网络
 pulse run                         # 执行一次并退出
@@ -31,7 +38,7 @@ pulse init --from-legacy data/settings.json --out pulse.local.yaml
 
 `--config`或PULSE_CONFIG选择配置；`--date YYYY-MM-DD`用于回溯。`--json`的stdout只有一个JSON对象，日志在stderr。
 
-首次安装可能需要下载依赖；安装完成后的demo与dry-run不访问网络。未绑定环境引用的离线预览会明确说明，不代表真实配置已经通过。
+demo使用历史公开材料，经真实解析、临时存储与排序后，回放录制的中文摘要。dry-run额外读取配置，并明确区分样本来源与未检查的当前来源；未绑定变量会列出。它们不证明模型、来源或飞书已经连通。
 
 ## 可见的失败
 
@@ -49,7 +56,7 @@ pulse init --from-legacy data/settings.json --out pulse.local.yaml
 
 每次运行创建并关闭网络客户端。PoolTimeout被判为客户端故障，最多整体重建一次。HN热度在各自来源中归一，不再以原始分数压过其他来源。
 
-进程不驻留，去重和投递状态持久保存在SQLite。Actions cache可能被驱逐，状态丢失可能导致重复推送；不承诺端到端严格恰好一次。详见部署文档。
+进程不驻留，去重和投递状态持久保存在SQLite。Actions通过同分支的状态制品恢复数据库，保留14天；制品过期或被删除可能导致重复推送。不承诺端到端严格恰好一次，详见部署文档。
 
 默认最多20个候选进入模型，正常只调用一次；JSON结构校验失败最多纠正一次。发送前按UTF-8字节数保守控制输入预算，服务商报告计数异常时会缩减候选，整个生成最多两次请求。摘要数字约束写入提示词，未宣称自动事实核验。
 
@@ -57,7 +64,7 @@ pulse init --from-legacy data/settings.json --out pulse.local.yaml
 
 ## 开发与验收
 
-Python3.12，包名保持ai_pulse。
+Python3.11或3.12，包名保持ai_pulse。
 
 ```bash
 pip install '.[dev]'
@@ -69,7 +76,7 @@ pulse run --dry-run --config tests/fixtures/pulse.yaml
 
 测试只用样本和临时状态，不读取真实.env，不访问网络、不调用真实模型或机器人。
 
-P0本地验收已完成；P1代码与离线验收记录见[实施记录](docs/IMPLEMENTATION_v0.3.md)。连续三天Actions实测尚待首次投递和后续运行，本地测试不能替代；P2尚未进入。
+工程检查与真实运行的边界见[当前状态](docs/status.md)。连续三天Actions实测尚待首次投递和后续运行，历史回放和离线测试不替代真实验收。
 
 ## 资料
 
@@ -77,5 +84,7 @@ P0本地验收已完成；P1代码与离线验收记录见[实施记录](docs/IM
 - [本地与迁移说明](docs/quickstart-local.md)
 - [Actions部署说明](docs/quickstart-actions.md)
 - [变更记录](CHANGELOG.md)
+- [贡献指南](CONTRIBUTING.md) · [添加来源](docs/adding-a-source.md) · [添加输出通道](docs/adding-a-sink.md)
+- [报告问题](https://github.com/NeverBeforr/ai-pulse-agent/issues/new/choose) · [安全说明](SECURITY.md)
 
 原创代码继续使用MIT许可证，第三方内容与依赖保留各自许可。

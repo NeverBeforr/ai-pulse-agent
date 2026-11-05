@@ -1,0 +1,27 @@
+name: 来源或功能建议
+description: 说明实际需求、公开来源或目标输出通道
+labels: [enhancement]
+body:
+  - type: dropdown
+    id: category
+    attributes:
+      label: 建议类型
+      options:
+        - 新信息源
+        - 新输出通道
+        - 使用体验
+        - 其他
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: 要解决的具体问题
+      description: 当前流程卡在哪里，谁会受益？
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议方案与公开参考
+      description: 来源链接、格式样本或服务商文档。请勿提供私人邮件或凭据。

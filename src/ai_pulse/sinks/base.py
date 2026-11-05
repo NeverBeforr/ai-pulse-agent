@@ -13,6 +13,11 @@ class Sink(Protocol):
 
 def coverage_line(digest):
     coverage = digest["coverage"]
+    if digest.get("offline"):
+        return (
+            f"历史回放 · {digest['local_date']} · "
+            f"样本来源 {coverage['successful']}/{coverage['total']} · 当前来源未检查"
+        )
     last = coverage.get("last_success")
     last = (
         datetime.fromisoformat(last).astimezone(ZoneInfo(digest["timezone"])).strftime("%Y-%m-%d %H:%M")

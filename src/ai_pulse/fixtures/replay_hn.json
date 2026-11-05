@@ -1,0 +1,52 @@
+[
+  {
+    "id": 50296486,
+    "type": "story",
+    "title": "We ran AI agent swarms in Minecraft and Mindustry",
+    "url": "https://labs.ycombinator.com/projects/games/index.html",
+    "text": "",
+    "time": 1793310028,
+    "score": 284,
+    "descendants": 100
+  },
+  {
+    "id": 50291116,
+    "type": "story",
+    "title": "Launch HN: Simantic (YC F26) – Firmware Simulation for AI Agents",
+    "url": "https://news.ycombinator.com/item?id=50291116",
+    "text": "Hi HN, we're Ahnaf and Seungmin from Simantic ( https://simantic.com ). We are building the simulation layer that lets engineers and AI agents test and validate firmware without hardware. Before Simantic, we were ex-firmware engineers at companies like Neuralink and Tesla. We’ve worked on some of the coolest projects, like the Cybertruck and Roadster, back when they were still early prototypes. We started working on firmware back when ChatGPT didn’t exist yet, but over the years, we saw how much of the engineering and development work has been automated as the frontier models improved to this point. In software, AI can run and test code inside your computer in a matter of seconds. But as firmware engineers, we didn’t have that luxury. An AI agent can write firmware in seconds, but in order to test it, we had to flash a physical board, then manually run tests using expensive and clunky tools with software made over a decade ago. To speed up the validation loop, we built the simulation layer that lets AI agents test the firmware and make decisions based on evidence, instead of waiting for the engineer to run tests for them. We used to spend hours testing our firmware manually on devboards, but now we use our own simulation to validate firmware in seconds. What we offer: - Virtual devboards you can program and run with a single API call, without leaving your terminal. - An AI code reviewer for firmware, that makes informed decisions based on evidence, using our simulation as a verification engine. - A CI/CD pipeline for your hardware projects that validates your firmware against a simulated version of the microcontroller on every commit. Here is a demo of our simulation used in an AI code review session: https://www.youtube.com/watch?v=kBK1ZjGWWbQ Our users are using Simantic for bare-metal and RTOS development for applications like flight controllers, electric vehicles, robotics, and satellites. For safety critical systems like avionics and automotives, a robust simulation system is incredibly important, because every change in the firmware puts a human life at stake, especially for machines that cost hundreds of thousands to millions of dollars. We recently helped an early stage space startup building satellites, to test their firmware on hardware that they don't yet have. Even the development modules for those satellites costs over $100k, and we helped them do that at just a hundredth of the cost and time. Early on in our journey, we established our idea to make better simulation but didn’t have a clear idea of how we would do it, we considered developing our software around open source emulation frameworks like Renode ( https://github.com/renode/renode ) and QEMU ( https://www.qemu.org/ ), because they were tools already used within the firmware industry. We built our MVP that was essentially a wrapper around Renode, but we quickly realized there were a lot of limitations to doing this. 1. We were bottlenecked by the development speed of Renode themselves. We tried making contributions on Github to fix issues we came across, but the speed in which we could merge our features in was not fast enough for a startup like us trying to move fast. 2. Renode is built using Dotnet, and it was proving itself to be slower than we would have liked. Renode was released in 2017, which was when all code was still being written by hand, so I think it made sense looking back, but there were limitations because of the language itself. 3. The open source ",
+    "time": 1793289392,
+    "score": 68,
+    "descendants": 21
+  },
+  {
+    "id": 50284856,
+    "type": "story",
+    "title": "Show HN: Fabivo – Furniture design from a photo to a numbered cut list",
+    "url": "https://www.fabivo.app/en",
+    "text": "Hello all, Ive been building Fabivo, a free furniture planner that runs in the browser. You sketch it simply by drawing it, (by far my favorite feature of this app), clicking for boards or just selecting some starting designs. But what i think separates fabivo from others its the image to model ai assistant, which took me a looong time to develop and get some quirks fixed, thanks god latest models are focusing on 3d, thats been helping too! The photo part is an image to JSON CAD harness: the model returns a parametric furniture model in mm that the app can build and edit. That harness is also what i benchmark, and honestly its the reason the app exists. I wanted to see if a photo could turn into a plan i could take to the saw. Also finetuned some image models and found interesting stuff, that was a first. My intention was to basically reuse the drawing feature to convert a 2d line sketch from image models like gpt image / nano banana to my parametric model, which \"worked\", and was actually thinking of using that for prod, but then cheaper/better models at 3d launched, but anyways, i learned a lot! Im getting better performance from my harness than from plain 3js, tho this is anecdotally and havent actually benchmarked it... Happy to answer anything, especially about the harness or the cut order. edit: Adding the numbers, missed them. 17 photos of real furniture, three models, same harness, medium reasoning, same tools. Scored on how close the returned structure and boards are to the gold model, so its my own set. (tho i have a hard time making a good scoring metric... just usually go by look!) Model (medium reasoning) Avg. time / photo Avg. input tokens / photo Avg. output tokens / photo Avg. tool calls / photo GPT-6.1 Terra 9.5 s 30,409 632 1.06 Claude Sonnet 5.5 13.6 s 50,167 1,592 1.18 Claude Haiku 5.5 34.9 s 66,786 6,658 2.35 Terra was both cheaper per photo and the most consistent to my likings. Sonnet was close on quality, Haiku needed way more tool calls to get there.",
+    "time": 1793251270,
+    "score": 3,
+    "descendants": 0
+  },
+  {
+    "id": 50268880,
+    "type": "story",
+    "title": "Show HN: Cirkit – Annotate, Trace, and Ask AI About Schematic PDFs",
+    "url": "https://www.cirkit.us/demo/",
+    "text": "Documentation tool for EEs to document and navigate their designs better. Upload your schematic PDFs to the tool and you will be able to annotate, pull data sheets of different components directly from Digikey, ask AI about your schematic, trace signals across different boards, embedded BOM data directly to components, and more, without ever having to leave the PDF viewer.",
+    "time": 1793156960,
+    "score": 3,
+    "descendants": 2
+  },
+  {
+    "id": 50274573,
+    "type": "story",
+    "title": "Show HN: Algeon – Compose GPU graph, vector, and ML algorithms in SQL",
+    "url": "https://github.com/algeon-dev/algeon",
+    "text": "Algeon is a query engine built on Apache DataFusion that exposes NVIDIA's cuGraph, cuVS, and cuML as SQL table functions. It doesn't write its GPU kernels. Instead, it takes what NVIDIA already has and embeds it into DataFusion, so you can call those GPU operations on any arbitrary data, with filter/join/agg using plain SQL. And why would you want that? Because GPU analytics used to require ad-hoc ETL pipelines, Python glue code, and imperative operation calls. That makes it hard to fit into a backend API service, and it isn't flexible enough for frequent exploratory iteration, adapting to different search conditions and data. Think of agents trying to answer complex questions on a datalake, which involves not only relational operations, but also graph/vector/ML analytics. They can now use declarative SQL to test their hypotheses and build the next query based on the previous response, making GPU OLAP an interactive service. Algeon can also be used as a library living inside your backend service, so your query response can be used directly within a single process, saving the transfer cost between the query engine and backend service. I started building Algeon last year. At first, it was cuDF Rust FFI bindings that aimed to bring GPU ETL pipelines into a single backend process, and it worked very well. Then I realized it might be possible to move GPU data science workloads into an OLAP query engine, since the NVIDIA RAPIDS ecosystem and DataFusion are mature. For use cases, architecture design, benchmarks, and more, feel free to check out, any feedback is welcome https://algeon.dev/",
+    "time": 1793198843,
+    "score": 2,
+    "descendants": 0
+  }
+]

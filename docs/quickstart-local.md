@@ -1,9 +1,9 @@
 # 在本地通过 cron 运行 Pulse
 
-需要Python3.12。安装后每次只启动一个短进程：
+本页供开发和本地调试；首发推荐GitHub Actions。需要Python3.11或3.12，安装后每次只启动一个短进程：
 
 ```bash
-pipx install .
+pipx install git+https://github.com/NeverBeforr/ai-pulse-agent@v0.3.0
 pulse demo
 pulse init --out pulse.local.yaml
 ```
@@ -15,14 +15,12 @@ export LLM_BASE_URL='https://your-provider.example/v1'
 export LLM_MODEL='your-model'
 export LLM_API_KEY='your-key'
 export FEISHU_WEBHOOK='https://open.feishu.cn/open-apis/bot/v2/hook/your-token'
-export IMAP_USER='your-mailbox@example.com'
-export IMAP_PASSWORD='your-app-password'
 pulse check --config pulse.local.yaml
 pulse run --config pulse.local.yaml
 pulse status --config pulse.local.yaml --json
 ```
 
-真实run先检查全部已启用配置，缺环境变量返回2。dry-run完全离线，不调用模型、不投递、不改去重状态；当前用内置样本预览并列出未绑定变量，不代表真实配置已经可运行。
+真实run先检查全部已启用配置，缺环境变量返回2。dry-run完全离线，不调用模型、不投递、不改用户去重状态；回放历史简报并列出未绑定变量，不代表真实配置已经可运行。可选邮箱来源还需要IMAP_USER、IMAP_PASSWORD。
 
 模型客户端使用SDK的标准网络环境，代理由部署环境中的HTTP_PROXY、HTTPS_PROXY、NO_PROXY等控制，程序不修改系统代理。
 

@@ -1,8 +1,9 @@
+from pathlib import Path
+
 import httpx
 
 from ai_pulse import pipeline
 from ai_pulse.errors import SourceFailure
-from ai_pulse.offline import fixture_root
 from ai_pulse.sources.rss import parse_feed
 from ai_pulse.storage import Store
 
@@ -15,7 +16,7 @@ def fake_sources(monkeypatch, failing=()):
         async def fetch(self, since):
             if self.config.id in failing:
                 raise SourceFailure("http", "HTTP 403")
-            return parse_feed(fixture_root().joinpath("rss_zh.xml").read_text(encoding="utf-8"))
+            return parse_feed((Path(__file__).parent / "fixtures/rss_zh.xml").read_text(encoding="utf-8"))
 
     monkeypatch.setattr(pipeline, "create_source", lambda config, network: Source(config))
 
