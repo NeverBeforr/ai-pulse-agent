@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block crumb %}历史简报{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">YOUR READING ARCHIVE</div><h1>回看热点，重访好案例。</h1><p>按日期保存每份简报，同日修订保留；旧版内容标记为历史版本。</p></div><a class="button secondary" href="/">回到今日 →</a></div>
+<form class="search-form" action="/history"><input name="q" placeholder="搜索简报标题…" value="{{ query }}" aria-label="搜索标题"><select name="section" aria-label="内容板块"><option value="">全部板块</option><option value="industry" {{ 'selected' if section == 'industry' else '' }}>行业热点</option><option value="products" {{ 'selected' if section == 'products' else '' }}>产品案例</option></select><button class="button primary">查找</button></form>
+<div class="archive-grid">
+{% for digest in digests %}
+<a class="archive-card" href="/digests/{{ digest.id }}">
+  <div class="eyebrow">{{ '历史版本' if digest.legacy else '中文简报' if digest.mode == 'cloud' else '规则预览' }}</div><h2>{{ digest.local_date }}</h2>
+  <p>行业热点 {{ digest.sections.industry|length }} · 产品案例 {{ digest.sections.products|length }} · 修订 {{ digest.revision }}</p>
+  <ul>{% for item in digest['items'][:3] %}<li><span class="archive-section">{{ section_labels[item.section].title }}</span>{{ item.title }}</li>{% endfor %}</ul>
+  <div class="card-footer"><span>{{ digest.created_at|local_time }}</span><span>阅读简报 ↗</span></div>
+</a>
+{% else %}<div class="empty-state"><span>◷</span><h3>还没有匹配的简报</h3><p>生成第一份简报，或调整搜索与板块条件。</p><a href="/" class="button primary">前往今日简报</a></div>{% endfor %}
+</div>
+{% endblock %}

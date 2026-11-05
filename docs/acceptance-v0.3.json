@@ -1,0 +1,133 @@
+{
+  "timestamp": "2026-11-04T18:50:52.671440+00:00",
+  "stage": "P1本地完成，线上三天待验收；未进入P2",
+  "tests_passed": 117,
+  "checks": [
+    {
+      "check": "pytest",
+      "command": "pytest -q",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "check": "ruff",
+      "command": "ruff check .",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "check": "demo",
+      "command": "pulse demo",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "check": "dry_fixture",
+      "command": "pulse run --dry-run --config tests/fixtures/pulse.yaml",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "check": "dry_default",
+      "command": "pulse run --dry-run",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "check": "dry_json",
+      "command": "pulse run --dry-run --json",
+      "exit_code": 0,
+      "expected": 0,
+      "single_json_object": true
+    },
+    {
+      "check": "demo_card",
+      "command": "pulse demo --sink feishu-json",
+      "exit_code": 0,
+      "expected": 0,
+      "single_json_object": true
+    },
+    {
+      "check": "status_json",
+      "command": "pulse status --json",
+      "exit_code": 0,
+      "expected": 0,
+      "single_json_object": true
+    },
+    {
+      "check": "missing_env",
+      "command": "pulse check --json",
+      "exit_code": 2,
+      "expected": 2,
+      "single_json_object": true
+    },
+    {
+      "check": "wheel_location",
+      "command": [
+        "E:\\ai-pulse-agent\\.conda\\python.exe",
+        "-s",
+        "-c",
+        "import ai_pulse; print(ai_pulse.__file__)"
+      ],
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "check": "wheel_demo",
+      "command": [
+        "E:\\ai-pulse-agent\\.conda\\python.exe",
+        "-s",
+        "-m",
+        "ai_pulse.cli",
+        "demo"
+      ],
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "check": "wheel_init",
+      "command": [
+        "E:\\ai-pulse-agent\\.conda\\python.exe",
+        "-s",
+        "-m",
+        "ai_pulse.cli",
+        "init",
+        "--out",
+        "wheel.yaml"
+      ],
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "check": "wheel_dry",
+      "command": [
+        "E:\\ai-pulse-agent\\.conda\\python.exe",
+        "-s",
+        "-m",
+        "ai_pulse.cli",
+        "run",
+        "--dry-run",
+        "--config",
+        "wheel.yaml",
+        "--json"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "single_json_object": true
+    }
+  ],
+  "static": {
+    "original_test_functions_retained": 31,
+    "agent_unchanged": true,
+    "templates_static_unchanged": true,
+    "workflow_yaml_valid": true,
+    "workflow_manual_default": true,
+    "readme_links_and_card_valid": true,
+    "credential_pattern_scan_clean": true
+  },
+  "live_verification": {
+    "github_actions_three_days": "未完成",
+    "real_llm_imap_feishu": "未执行",
+    "real_generation_under_40_seconds": "未验证"
+  }
+}

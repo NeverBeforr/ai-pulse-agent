@@ -1,0 +1,54 @@
+name: 每日简报
+on:
+  workflow_dispatch:
+  # 确认配置并完成一次手动运行后，再取消下面两行注释。
+  # schedule:
+  #   - cron: '0 0 * * *'  # UTC 00:00，即北京时间08:00
+permissions:
+  contents: read
+concurrency:
+  group: pulse-digest-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install .
+      - uses: actions/cache/restore@v4
+        with:
+          path: data/pulse.db*
+          key: pulse-state-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            pulse-state-${{ github.ref_name }}-
+      - name: 执行一次并退出
+        id: digest
+        run: pulse run --config pulse.yaml --json
+        env:
+          LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
+          LLM_MODEL: ${{ vars.LLM_MODEL }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+          # 仅在pulse.yaml启用可选IMAP来源时需要下面两项。
+          IMAP_USER: ${{ vars.IMAP_USER }}
+          IMAP_PASSWORD: ${{ secrets.IMAP_PASSWORD }}
+      - name: 展示真实运行状态
+        if: always() && steps.digest.outcome != 'skipped'
+        run: pulse status --config pulse.yaml --json
+      - name: 保存去重与投递状态
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/pulse.db*
+          key: pulse-state-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: 保留简报便于核查
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pulse-digests-${{ github.run_id }}
+          path: digests/*.md
+          if-no-files-found: ignore

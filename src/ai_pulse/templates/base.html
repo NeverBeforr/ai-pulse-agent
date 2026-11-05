@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>{% block title %}AI Pulse · 每日 AI 简报{% endblock %}</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body data-active-run="{{ active_run.id if active_run else '' }}">
+  <aside class="sidebar">
+    <a class="brand" href="/"><span class="brand-mark">p<span>•</span></span><span>AI PULSE<small>把值得关注的，留下来。</small></span></a>
+    <div class="nav-caption">工作空间</div>
+    <nav aria-label="主导航">
+      <a href="/" class="{{ 'selected' if page == 'index' else '' }}"><span class="nav-icon">◈</span> 今日简报 <span class="nav-dot"></span></a>
+      <a href="/history" class="{{ 'selected' if page == 'history' else '' }}"><span class="nav-icon">◷</span> 历史简报</a>
+      <a href="/sources" class="{{ 'selected' if page == 'sources' else '' }}"><span class="nav-icon">◎</span> 信息来源</a>
+      <a href="/runs" class="{{ 'selected' if page == 'runs' else '' }}"><span class="nav-icon">≋</span> 运行记录</a>
+    </nav>
+    <div class="sidebar-note"><span class="eyebrow">你的阅读节奏</span><strong>每天 {{ settings.schedule_time }}</strong><p>行业热点与真实产品案例。<br>各取一半，3–5 分钟读完。</p><span class="tiny">UTC+8 · 程序运行时自动更新</span></div>
+    <div class="sidebar-bottom"><a href="/settings" class="{{ 'selected' if page == 'settings' else '' }}"><span class="nav-icon">⚙</span> 设置与模型</a><div class="local-status"><span class="status-dot"></span> 本机运行 <span>v0.1</span></div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><span>个人信息工作台 <span class="topbar-slash">/</span> <strong>{% block crumb %}每日阅读{% endblock %}</strong></span><a class="mode-pill" href="/settings"><span class="status-dot {{ 'amber' if settings.model_mode == 'preview' else '' }}"></span>{{ '规则预览 · 模型待接入' if settings.model_mode == 'preview' else '云端模型模式' }}</a></header>
+    <div class="page-content">
+      <div id="active-banner" class="active-banner" {% if not active_run %}hidden{% endif %}><span class="spinner"></span><span id="active-text">{{ active_run.stage if active_run else '' }}</span><a href="/runs">查看任务 →</a></div>
+      {% block content %}{% endblock %}
+      <footer class="footer"><span>AI Pulse · 让信息回到有用的尺度</span><span>来源透明 / 本地存储 / 自带模型</span></footer>
+    </div>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

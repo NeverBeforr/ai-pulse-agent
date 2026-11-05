@@ -1,0 +1,17 @@
+.conda/
+.env
+.env.*
+!.env.example
+data/
+digests/
+pulse.local.yaml
+private-pulse-env
+logs/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+screenshots/

@@ -1,0 +1,28 @@
+<article class="news-card" data-section="{{ item.section }}">
+  <div class="card-number">{{ '%02d'|format(card_number) }}</div>
+  <div class="card-content">
+    <div class="card-meta">
+      <span class="category {{ 'repo' if item.section == 'products' else '' }}">{{ section_labels[item.section].title }}</span>
+      <span>{{ item.metrics.get('time_label', '来源时间') }} · {{ item.published_at|local_time(true) if item.published_at else '发布时间未知' }}</span>
+      {% if item.metrics.get('time_precision') == 'date' %}<span>仅精确到日期</span>{% endif %}
+    </div>
+    <h3><a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.title }} <span>↗</span></a></h3>
+    <p class="summary">{{ item.summary }}</p>
+    <div class="reason"><span>{{ '排序线索' if digest.mode == 'preview' else section_labels[item.section].reason_label }}</span>{{ item.reason }}</div>
+    <div class="card-footer">
+      <div class="source-list">{% for source in item.sources %}<span>{{ source.name }}</span>{% endfor %}</div>
+      <a class="reading-link" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ '查看项目' if item.kind == 'repository' else '产品与原文' if item.section == 'products' else '阅读原文' }} ↗</a>
+    </div>
+    <details class="evidence-links">
+      <summary>来源依据 · {{ item.evidence_status }}</summary>
+      {% for evidence in item.evidence %}<a href="{{ evidence.url }}" target="_blank" rel="noopener noreferrer">{{ evidence.title }} ↗</a>{% endfor %}
+      {% if item.kind == 'repository' %}
+      <div class="repo-metrics">
+        <span>☆ {{ '{:,}'.format(item.metrics.stars) if 'stars' in item.metrics else 'Star 待获取' }}</span>
+        {% if item.metrics.get('language') %}<span>{{ item.metrics.language }}</span>{% endif %}
+        <span>{{ '观测 ' ~ item.growth.hours ~ ' 小时净增 ' ~ item.growth.delta if item.growth else '暂无 Star 增长历史' }}</span>
+      </div>
+      {% endif %}
+    </details>
+  </div>
+</article>

@@ -1,0 +1,416 @@
+{
+  "summary": {
+    "digest_total": 8,
+    "digest_modes": {
+      "preview": 7,
+      "cloud": 1
+    },
+    "all_digest_dates": [
+      "2026-10-28",
+      "2026-10-29",
+      "2026-10-30"
+    ],
+    "cloud_digest_count": 1,
+    "cloud_digest_dates": [
+      "2026-10-30"
+    ],
+    "cloud_daily_revisions": {
+      "2026-10-30": 1
+    },
+    "run_outcomes": {
+      "digest:failed": 6,
+      "digest:success": 8,
+      "collect:success": 59,
+      "model_test:success": 2,
+      "model_test:failed": 2
+    },
+    "run_triggers": {
+      "startup-or-resume": 3,
+      "manual": 11,
+      "hourly": 59,
+      "scheduled": 2,
+      "integration-diagnostic": 1,
+      "direct-connection-generation": 1
+    },
+    "first_run": "2026-10-28T09:45:50.372883+00:00",
+    "last_run": "2026-10-31T23:50:39.498681+00:00",
+    "cloud_success_latency_seconds": [
+      128.190552
+    ],
+    "cloud_success_median_seconds": 128.190552,
+    "model_usage_records": 18,
+    "input_tokens_recorded": 288700,
+    "output_tokens_recorded": 4857,
+    "usage_with_price": 0,
+    "models": {
+      "gpt-6-luna": 9,
+      "gpt-6.1-sol": 9
+    }
+  },
+  "cloud_editions": [
+    {
+      "id": 8,
+      "date": "2026-10-30",
+      "revision": 2,
+      "items": [
+        {
+          "entry_id": 302,
+          "section": "industry",
+          "title": "YC用50个GPT-6.1智能体测试群体协作行为",
+          "summary": "YC Labs在Minecraft中让50个GPT-6.1智能体共同建设文明，运行3小时并发送约5900条消息。智能体自行形成领导层、分配制度和粮食账本，但首夜有22个智能体死亡，随后明显转向避险和集中管理。",
+          "reason": "展示多智能体协作从分工到治理的真实涌现过程",
+          "evidence_status": "材料有限",
+          "url": "https://labs.ycombinator.com/projects/games/index.html",
+          "kind": "news",
+          "published_at": "2026-10-29T21:40:28+00:00",
+          "metrics": {
+            "hn_score": 284,
+            "hn_comments": 100,
+            "hn_url": "https://news.ycombinator.com/item?id=50296486",
+            "time_label": "HN提交时间",
+            "time_precision": "minute",
+            "time_priority": 1,
+            "discovery": "Hacker News 讨论"
+          },
+          "growth": null,
+          "sources": [
+            {
+              "id": 1,
+              "name": "Hacker News",
+              "channel": "社区公开 API"
+            }
+          ],
+          "evidence": [
+            {
+              "title": "We ran AI agent swarms in Minecraft and Mindustry",
+              "url": "https://labs.ycombinator.com/projects/games/index.html"
+            }
+          ]
+        },
+        {
+          "entry_id": 306,
+          "section": "products",
+          "title": "Simantic让AI智能体在虚拟硬件上验证固件",
+          "summary": "Simantic面向嵌入式、机器人、汽车和卫星团队，提供可通过API调用的虚拟开发板、固件AI审查器和硬件CI流水线。它用Rust自研模拟器，并以真实芯片验证模型精度，支持部分STM32、ESP32和RP2040型号。",
+          "reason": "把固件测试从烧板等待变成可自动运行的验证循环",
+          "evidence_status": "材料有限",
+          "url": "https://news.ycombinator.com/item?id=50291116",
+          "kind": "news",
+          "published_at": "2026-10-29T15:56:32+00:00",
+          "metrics": {
+            "hn_score": 68,
+            "hn_comments": 21,
+            "hn_url": "https://news.ycombinator.com/item?id=50291116",
+            "time_label": "HN提交时间",
+            "time_precision": "minute",
+            "time_priority": 1,
+            "discovery": "Hacker News 讨论"
+          },
+          "growth": null,
+          "sources": [
+            {
+              "id": 1,
+              "name": "Hacker News",
+              "channel": "社区公开 API"
+            }
+          ],
+          "evidence": [
+            {
+              "title": "Launch HN: Simantic (YC F26) – Firmware Simulation for AI Agents",
+              "url": "https://news.ycombinator.com/item?id=50291116"
+            }
+          ]
+        },
+        {
+          "entry_id": 261,
+          "section": "products",
+          "title": "Fabivo把家具照片转换成可编辑的裁切清单",
+          "summary": "Fabivo面向木工和家具设计者，允许用户在浏览器中手绘家具、选择模板，或上传照片让AI生成毫米级参数化模型。模型可继续编辑并输出编号裁切清单，目标是把一张参考图直接转成可执行的制作方案。",
+          "reason": "把图像理解连接到参数化建模和实际下料流程",
+          "evidence_status": "材料有限",
+          "url": "https://www.fabivo.app/en",
+          "kind": "news",
+          "published_at": "2026-10-29T05:21:10+00:00",
+          "metrics": {
+            "hn_score": 3,
+            "hn_comments": 0,
+            "hn_url": "https://news.ycombinator.com/item?id=50284856",
+            "time_label": "HN提交时间",
+            "time_precision": "minute",
+            "time_priority": 1,
+            "discovery": "Hacker News 讨论"
+          },
+          "growth": null,
+          "sources": [
+            {
+              "id": 1,
+              "name": "Hacker News",
+              "channel": "社区公开 API"
+            }
+          ],
+          "evidence": [
+            {
+              "title": "Show HN: Fabivo – Furniture design from a photo to a numbered cut list",
+              "url": "https://www.fabivo.app/en"
+            }
+          ]
+        },
+        {
+          "entry_id": 46,
+          "section": "products",
+          "title": "Cirkit让电子工程师直接在原理图PDF中问AI",
+          "summary": "Cirkit面向电子工程师，把原理图PDF变成可搜索、可批注的工作区。用户能在图纸内追踪跨板信号、查询DigiKey元件数据、查看嵌入式BOM，并直接询问AI电路关系，减少在文档、数据手册和元件库之间切换。",
+          "reason": "将电路文档阅读、元件查询和信号追踪合并到同一界面",
+          "evidence_status": "材料有限",
+          "url": "https://www.cirkit.us/demo/",
+          "kind": "news",
+          "published_at": "2026-10-28T03:09:20+00:00",
+          "metrics": {
+            "hn_score": 3,
+            "hn_comments": 2,
+            "hn_url": "https://news.ycombinator.com/item?id=50268880",
+            "time_label": "HN提交时间",
+            "time_precision": "minute",
+            "time_priority": 1,
+            "discovery": "Hacker News 讨论"
+          },
+          "growth": null,
+          "sources": [
+            {
+              "id": 1,
+              "name": "Hacker News",
+              "channel": "社区公开 API"
+            }
+          ],
+          "evidence": [
+            {
+              "title": "Show HN: Cirkit – Annotate, Trace, and Ask AI About Schematic PDFs",
+              "url": "https://www.cirkit.us/demo/"
+            }
+          ]
+        },
+        {
+          "entry_id": 176,
+          "section": "products",
+          "title": "Algeon用SQL调用GPU图、向量和机器学习算法",
+          "summary": "Algeon基于Apache DataFusion，把NVIDIA cuGraph、cuVS和cuML封装成SQL表函数。数据团队和智能体可以在同一条查询中组合过滤、连接、聚合、图分析、向量搜索与机器学习，减少传统GPU分析所需的ETL和Python胶水代码。",
+          "reason": "让智能体用声明式SQL迭代复杂GPU数据分析任务",
+          "evidence_status": "材料有限",
+          "url": "https://github.com/algeon-dev/algeon",
+          "kind": "repository",
+          "published_at": "2026-10-28T14:47:23+00:00",
+          "metrics": {
+            "hn_score": 2,
+            "hn_comments": 0,
+            "hn_url": "https://news.ycombinator.com/item?id=50274573",
+            "time_label": "HN提交时间",
+            "time_precision": "minute",
+            "time_priority": 1,
+            "discovery": "Hacker News 仓库链接"
+          },
+          "growth": null,
+          "sources": [
+            {
+              "id": 1,
+              "name": "Hacker News",
+              "channel": "社区公开 API"
+            }
+          ],
+          "evidence": [
+            {
+              "title": "Show HN: Algeon – Compose GPU graph, vector, and ML algorithms in SQL",
+              "url": "https://github.com/algeon-dev/algeon"
+            }
+          ]
+        }
+      ],
+      "coverage": {
+        "results": [
+          {
+            "source": "Hacker News",
+            "ok": true,
+            "count": 10
+          },
+          {
+            "source": "TLDR AI",
+            "ok": true,
+            "count": 21
+          },
+          {
+            "source": "TLDR 科技主刊",
+            "ok": true,
+            "count": 16
+          },
+          {
+            "source": "GitHub AI 项目发现",
+            "ok": true,
+            "count": 20
+          },
+          {
+            "source": "OpenAI 官方",
+            "ok": true,
+            "count": 38
+          },
+          {
+            "source": "Google AI 官方",
+            "ok": true,
+            "count": 10
+          },
+          {
+            "source": "机器之心",
+            "ok": false,
+            "error": "页面可访问，但未提取到 AI 相关文章；需核对解析规则"
+          },
+          {
+            "source": "量子位",
+            "ok": true,
+            "count": 4
+          },
+          {
+            "source": "极客公园",
+            "ok": false,
+            "error": "HTTPStatusError"
+          }
+        ],
+        "repository_discovery": {
+          "count": 0,
+          "notes": [
+            "r28ai/charter: HTTP 403"
+          ]
+        },
+        "successful": 7,
+        "total": 9,
+        "count": 119,
+        "offline_gap": false,
+        "pending_sources": [
+          "新智元",
+          "AI科技评论",
+          "InfoQ",
+          "DeepSeek 官方发布",
+          "Qwen 官方发布"
+        ],
+        "candidate_count": 40,
+        "selected": 5,
+        "format_version": 2,
+        "section_counts": {
+          "industry": 1,
+          "products": 4
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "name": "Hacker News",
+      "channel": "社区公开 API",
+      "enabled": 1,
+      "state": "error",
+      "message": "PoolTimeout",
+      "last_success": "2026-10-31T01:00:38.190442+00:00"
+    },
+    {
+      "name": "TLDR AI",
+      "channel": "公开归档",
+      "enabled": 1,
+      "state": "error",
+      "message": "PoolTimeout",
+      "last_success": "2026-10-31T01:50:42.018676+00:00"
+    },
+    {
+      "name": "TLDR 科技主刊",
+      "channel": "公开归档",
+      "enabled": 1,
+      "state": "error",
+      "message": "PoolTimeout",
+      "last_success": "2026-10-31T01:50:47.029593+00:00"
+    },
+    {
+      "name": "GitHub AI 项目发现",
+      "channel": "公开仓库 API",
+      "enabled": 1,
+      "state": "error",
+      "message": "PoolTimeout",
+      "last_success": "2026-10-31T01:50:49.636633+00:00"
+    },
+    {
+      "name": "OpenAI 官方",
+      "channel": "官方 RSS",
+      "enabled": 1,
+      "state": "error",
+      "message": "PoolTimeout",
+      "last_success": "2026-10-31T01:50:49.563549+00:00"
+    },
+    {
+      "name": "Google AI 官方",
+      "channel": "官方 RSS",
+      "enabled": 1,
+      "state": "error",
+      "message": "PoolTimeout",
+      "last_success": "2026-10-31T01:50:54.034958+00:00"
+    },
+    {
+      "name": "机器之心",
+      "channel": "官网替代渠道，非公众号全量",
+      "enabled": 1,
+      "state": "error",
+      "message": "PoolTimeout",
+      "last_success": null
+    },
+    {
+      "name": "量子位",
+      "channel": "官网替代渠道，非公众号全量",
+      "enabled": 1,
+      "state": "error",
+      "message": "PoolTimeout",
+      "last_success": "2026-10-31T01:50:51.801835+00:00"
+    },
+    {
+      "name": "新智元",
+      "channel": "公众号原生入口待接通",
+      "enabled": 0,
+      "state": "pending",
+      "message": "待验证免费接入渠道",
+      "last_success": null
+    },
+    {
+      "name": "AI科技评论",
+      "channel": "媒体候选，准确账号及栏目待核验",
+      "enabled": 0,
+      "state": "pending",
+      "message": "待验证免费接入渠道",
+      "last_success": null
+    },
+    {
+      "name": "极客公园",
+      "channel": "官网替代渠道，非公众号全量",
+      "enabled": 1,
+      "state": "error",
+      "message": "PoolTimeout",
+      "last_success": "2026-10-31T01:50:54.168288+00:00"
+    },
+    {
+      "name": "InfoQ",
+      "channel": "官网替代入口待适配",
+      "enabled": 0,
+      "state": "pending",
+      "message": "待验证免费接入渠道",
+      "last_success": null
+    },
+    {
+      "name": "DeepSeek 官方发布",
+      "channel": "单仓库发布订阅，不代表厂商完整动态",
+      "enabled": 0,
+      "state": "pending",
+      "message": "待验证免费接入渠道",
+      "last_success": null
+    },
+    {
+      "name": "Qwen 官方发布",
+      "channel": "单仓库发布订阅，不代表厂商完整动态",
+      "enabled": 0,
+      "state": "pending",
+      "message": "待验证免费接入渠道",
+      "last_success": null
+    }
+  ]
+}

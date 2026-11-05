@@ -1,0 +1,41 @@
+version: 1
+timezone: Asia/Hong_Kong
+schedule: 08:00
+output:
+  items: 5
+  max_items: 8
+  language: zh
+  sections:
+  - industry
+  - products
+  max_summary_chars: 140
+model:
+  base_url: ${LLM_BASE_URL}
+  api_key: ${LLM_API_KEY}
+  name: ${LLM_MODEL}
+  temperature: 0.2
+  max_input_tokens: 20000
+  timeout_seconds: 120
+sources:
+- id: hn
+  type: hn
+  enabled: true
+  channel: Hacker News
+- id: tldr-web
+  type: tldr
+  enabled: true
+  channel: TLDR AI
+  url: https://tldr.tech/ai/archives
+- id: official-rss
+  type: rss
+  enabled: true
+  channel: 官方RSS
+  url: https://openai.com/news/rss.xml
+sinks:
+- type: feishu
+  webhook: ${FEISHU_WEBHOOK}
+- type: markdown
+  path: ./digests/{date}.md
+state:
+  path: ./data/pulse.db
+  dedup_days: 7

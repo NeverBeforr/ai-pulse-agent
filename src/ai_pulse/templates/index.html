@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-heading">
+  <div><div class="eyebrow">YOUR DAILY AI BRIEFING</div><h1>今日 AI 热点与产品案例</h1><p>用 3–5 分钟了解重要变化，发现真实、有新意的应用。</p></div>
+  <div class="actions"><button class="button secondary" data-run="collect">↻ 采集来源</button><button class="button primary" data-run="digest">{{ '生成规则简报' if settings.model_mode == 'preview' else '生成 AI 简报' }} <span>↗</span></button></div>
+</div>
+{% if demo %}
+<div class="notice"><span class="notice-icon">i</span><div><strong>你正在查看演示样例</strong><p>用既有能力和真实产品演示阅读结构，不是今日新闻。点击“生成规则简报”可采集真实来源，无需模型密钥。</p></div><span class="tag">阅读演示</span></div>
+{% elif digest.mode == 'preview' %}
+<div class="notice"><span class="notice-icon">i</span><div><strong>真实采集 · 规则预览</strong><p>已按两类内容初筛，保留原文语言。完整中文编辑、跨来源事件合并及语义判断，待模型接入后验证。<a href="/demo">查看中文阅读示例 →</a></p></div><span class="tag">未调用模型</span></div>
+{% endif %}
+{% if digest.legacy %}
+<div class="subtle-warning legacy-notice">这是旧版历史简报，内容原样保留；仅按原类型分组展示，尚未按新选稿标准重编。重新生成可查看新版。</div>
+{% endif %}
+<section class="overview">
+  <div class="overview-date"><div class="eyebrow">{{ 'READING EXAMPLE' if demo else 'DAILY EDITION' }}</div><strong>{{ digest.local_date }}</strong><span>{{ '能力与案例示意，非当日发布' if demo else '修订 ' ~ digest.revision ~ ' · ' ~ (digest.created_at | local_time) }}</span></div>
+  <div class="overview-stat"><span>行业热点</span><strong>{{ '%02d'|format(digest.sections.industry|length) }}{% if not digest.legacy %}<small> / 5</small>{% endif %}</strong><span>了解变化与影响</span></div>
+  <div class="overview-stat"><span>产品案例</span><strong>{{ '%02d'|format(digest.sections.products|length) }}{% if not digest.legacy %}<small> / 5</small>{% endif %}</strong><span>发现真实场景与玩法</span></div>
+  <div class="reading-target"><span>默认阅读节奏</span><strong>3–5 <small>分钟</small></strong><span>读完摘要，就有所收获</span></div>
+</section>
+<div class="content-columns">
+  <section class="feed">
+    <div class="section-heading edition-nav"><span class="edition-count">本期 {{ digest['items']|length }} 条 · 质量不足时少报</span><div class="filters"><button class="filter active" data-filter="all">全部</button><button class="filter" data-filter="industry">行业热点</button><button class="filter" data-filter="products">产品案例</button></div></div>
+    {% for section, info in section_labels.items() %}
+    <section class="edition-section" data-section="{{ section }}" id="{{ section }}">
+      <div class="section-heading"><div><h2>{{ info.title }} <span>{{ digest.sections[section]|length }}</span></h2><p class="section-description">{{ info.description }}</p></div><span class="section-quota">{{ '历史分组' if digest.legacy else '目标 5 条' }}</span></div>
+      {% for item in digest.sections[section] %}{% set card_number = loop.index %}{% include 'edition_card.html' %}
+      {% else %}<div class="empty-state section-empty"><h3>本期暂无{{ info.title }}</h3><p>没有足够合格内容时少报，不从另一板块凑数。</p></div>{% endfor %}
+    </section>
+    {% endfor %}
+  </section>
+  <aside class="reading-aside">
+    <div class="aside-panel"><div class="eyebrow">READ TO UNDERSTAND</div><h3>读完，就有所收获。</h3><p>热点讲清变化与意义，案例说明人群、用途和新意。感兴趣的内容，再深入原文。</p><a href="/demo">看看完整阅读示例 →</a></div>
+    <div class="aside-panel minimal"><h4>每天各取一半</h4><span class="topic-chip">重要模型与能力</span><span class="topic-chip">行业与生态变化</span><span class="topic-chip">真实产品</span><span class="topic-chip">新场景与玩法</span><div class="aside-line"></div><h4>选稿约定</h4><p>跳过融资、人事和明显同质化套壳。热度帮助发现，内容价值决定入选。</p><a href="/sources">查看我的信息源 →</a></div>
+  </aside>
+</div>
+<details class="coverage-note"><summary>本期来源覆盖与运行说明</summary>
+  <p>当前已验证来源 {{ source_ok }}/{{ source_total }}。<a href="/sources">管理来源</a> · <a href="/runs">查看运行记录</a></p>
+  {% if not demo %}<p>生成时来源成功 {{ digest.coverage.successful }}/{{ digest.coverage.total }}。{% if digest.coverage.successful < digest.coverage.total %}本期采集不完整，未接通来源不代表没有更新。{% endif %}</p>{% endif %}
+  {% if digest.coverage.offline_gap %}<p>本次最多回溯 72 小时，更早的离线时段未完整覆盖。</p>{% endif %}
+  {% if digest.mode == 'preview' %}<p>规则预分类无法完整判断产品同质化与事实意义，真实模型验证仍待完成。</p>{% endif %}
+</details>
+{% endblock %}

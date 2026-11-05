@@ -1,0 +1,7 @@
+# Cloudflare 部署规划
+
+尚未实现，欢迎PR。当前Pulse通过Python3.12和本地SQLite运行，首发支持本地外部调度及GitHub Actions。
+
+未来可评估Worker接收Cron触发、使用D1保存delivered_entries和deliveries，并将采集与投递作为单次任务执行。邮箱IMAP与Python库的运行限制需要另行验证，不能把本页当作可直接部署的说明。
+
+此项属于可选P2，须在P1连续三天真实Actions验收后再评估。本轮不提供Worker、D1适配或其他对象存储后端。
