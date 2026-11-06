@@ -2,6 +2,9 @@ import json
 
 import httpx
 
+# 测试替换HTTPX构造器前，先加载会继承其客户端类型的SDK。
+import openai  # noqa: F401
+
 from ai_pulse.cli import main
 
 

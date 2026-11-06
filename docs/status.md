@@ -12,7 +12,7 @@
 
 真实简报在本地忽略目录digests/2026-11-06.md，正文与逐篇记录在data/pulse.fulltext.db，验证摘要在data/fulltext-verification-20261106.json。它们没有上传仓库。2026年11月5日的摘要输入测试属于0.3历史记录，已不代表当前默认流程。
 
-尚未完成真实飞书投递、真实IMAP联调或连续三天每日Actions验收。定时工作流默认关闭，先配置并手动验证再开启。SMTP、Cloudflare运行时、邮箱OAuth和飞书加签均未实现。
+飞书输出已支持签名校验，本轮正在验证云端首次真实投递；实际结果以Actions记录为准。真实IMAP联调或连续三天每日Actions验收尚未完成。定时工作流默认关闭，先配置并手动验证再开启。SMTP、Cloudflare运行时和邮箱OAuth尚未实现。
 
 Actions状态通过保留14天的制品恢复，不使用每日累积的不可覆盖cache。制品过期或被删除后可能丢失去重历史；失败不能伪装为成功，具体部署边界见[Actions说明](quickstart-actions.md)。
 

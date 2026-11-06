@@ -118,3 +118,25 @@ def test_whitespace_key_is_a_named_configuration_error(config_file, monkeypatch)
     monkeypatch.setenv("LLM_API_KEY", "   ")
     with pytest.raises(ConfigError, match="LLM_API_KEY"):
         load_config(config_file)
+
+
+def test_optional_feishu_signing_secret_is_environment_only_and_redacted(config_file, monkeypatch):
+    from ai_pulse.config import redact
+
+    monkeypatch.setenv("FEISHU_SIGNING_SECRET", "fake-signing-secret")
+    config = load_config(config_file)
+    assert config.sinks[0].signing_secret.get_secret_value() == "fake-signing-secret"
+    assert redact("fake-signing-secret", config._secret_values) == "[已隐藏]"
+
+
+def test_unsigned_bot_does_not_require_signing_environment(config_file):
+    assert load_config(config_file).sinks[0].signing_secret is None
+
+
+def test_plain_signing_secret_in_yaml_is_rejected(config_file):
+    data = yaml.safe_load(config_file.read_text(encoding="utf-8"))
+    data["sinks"][0]["signing_secret"] = "do-not-store-this"
+    config_file.write_text(yaml.safe_dump(data), encoding="utf-8")
+    with pytest.raises(ConfigError) as error:
+        load_config(config_file)
+    assert "do-not-store-this" not in str(error.value)

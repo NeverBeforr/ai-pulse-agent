@@ -26,6 +26,8 @@ uvx --from git+https://github.com/NeverBeforr/ai-pulse-agent@v0.3.0 pulse demo
 
 首发部署使用GitHub Actions：在仓库填写LLM_API_KEY、FEISHU_WEBHOOK两个Secrets，以及LLM_BASE_URL、LLM_MODEL两个Variables。密钥只通过环境变量注入；首次手动验证后，再启用每天北京时间约8点的定时执行。详细设置在部署文档。
 
+机器人开启签名校验时，额外添加FEISHU_SIGNING_SECRET Secret；不开启时仍只需两个Secrets。
+
 ## 命令
 
 ```bash

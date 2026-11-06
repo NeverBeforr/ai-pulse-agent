@@ -174,6 +174,7 @@ class SourceConfig(StrictConfig):
 class SinkConfig(StrictConfig):
     type: Literal["feishu", "markdown", "email"]
     webhook: SecretStr | None = None
+    signing_secret: SecretStr | None = Field(default=None, min_length=1)
     feedback_url: str | None = None
     path: str = "./digests/{date}.md"
     host: str | None = None
@@ -187,7 +188,7 @@ class SinkConfig(StrictConfig):
     @model_validator(mode="after")
     def sink_fields(self):
         fields = {
-            "feishu": {"type", "webhook", "feedback_url"},
+            "feishu": {"type", "webhook", "feedback_url", "signing_secret"},
             "markdown": {"type", "path"},
             "email": {"type", "host", "port", "username", "password", "from_address", "to", "starttls"},
         }[self.type]

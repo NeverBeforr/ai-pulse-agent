@@ -33,6 +33,7 @@ jobs:
           LLM_MODEL: ${{ vars.LLM_MODEL }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+          FEISHU_SIGNING_SECRET: ${{ secrets.FEISHU_SIGNING_SECRET }}
           # 仅在pulse.yaml启用可选IMAP来源时需要下面两项。
           IMAP_USER: ${{ vars.IMAP_USER }}
           IMAP_PASSWORD: ${{ secrets.IMAP_PASSWORD }}

@@ -10,6 +10,8 @@ pulse init --out pulse.local.yaml
 
 在shell环境中提供LLM_BASE_URL、LLM_MODEL、LLM_API_KEY和FEISHU_WEBHOOK。默认使用公开来源；若改用可选IMAP，还要提供IMAP_USER、IMAP_PASSWORD。凭据只从环境读取，程序不自动读取真实.env，也不会从旧settings.json读取密钥。
 
+机器人开启签名校验时，还需在环境中提供FEISHU_SIGNING_SECRET。该项可省略，但不能在YAML里填写明文。
+
 ```bash
 export LLM_BASE_URL='https://your-provider.example/v1'
 export LLM_MODEL='your-model'

@@ -7,7 +7,7 @@ from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
 import yaml
-from pydantic import ValidationError, field_validator
+from pydantic import SecretStr, ValidationError, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .errors import ConfigError
@@ -86,7 +86,7 @@ def save_settings(settings: Settings) -> None:
 
 
 ENV_REF = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)\}")
-SECRET_FIELDS = {"api_key", "webhook", "password"}
+SECRET_FIELDS = {"api_key", "webhook", "password", "signing_secret"}
 
 
 def redact(value, secrets=()) -> str:
@@ -175,6 +175,14 @@ def load_config(path=None, *, offline=False) -> PulseConfig:
             + ", ".join(sorted(SOURCES))
         )
         raise ConfigError(redact(message + available, values)) from exc
+    signing_secret = os.environ.get("FEISHU_SIGNING_SECRET")
+    if signing_secret:
+        if not signing_secret.strip():
+            raise ConfigError("环境变量FEISHU_SIGNING_SECRET不能只包含空白")
+        for sink in config.sinks:
+            if sink.type == "feishu" and sink.signing_secret is None:
+                sink.signing_secret = SecretStr(signing_secret)
+                values.append(signing_secret)
     for source in config.sources:
         if source.enabled and source.type not in SOURCES:
             raise ConfigError(

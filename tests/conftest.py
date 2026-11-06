@@ -33,6 +33,7 @@ def offline_only(monkeypatch):
         "LLM_MODEL",
         "LLM_BASE_URL",
         "FEISHU_WEBHOOK",
+        "FEISHU_SIGNING_SECRET",
         "IMAP_USER",
         "IMAP_PASSWORD",
         "GITHUB_TOKEN",
