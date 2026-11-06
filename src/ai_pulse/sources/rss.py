@@ -22,7 +22,8 @@ def parse_feed(content: str) -> list[CollectedItem]:
         if not title or not link:
             continue
         summary = clean_text(entry.get("summary", ""))
-        if not is_ai(title + " " + summary):
+        feed_content = "\n\n".join(part.get("value", "") for part in entry.get("content", []))
+        if not is_ai(title + " " + summary + " " + clean_text(feed_content)):
             continue
         timestamp = entry.get("published_parsed") or entry.get("updated_parsed")
         published = datetime.fromtimestamp(calendar.timegm(timestamp), UTC).isoformat() if timestamp else None
@@ -32,6 +33,7 @@ def parse_feed(content: str) -> list[CollectedItem]:
                 title=title[:500],
                 url=canonical_url(link),
                 summary=summary,
+                feed_content=feed_content,
                 published_at=published,
                 metrics={"time_label": "来源发布时间", "time_precision": "minute", "time_priority": 3},
             )

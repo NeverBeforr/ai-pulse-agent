@@ -1,2 +1,3 @@
 recursive-include tests *.py *.json *.xml *.html *.eml *.yaml
 include scripts/restore_state.py
+include scripts/export_state.py

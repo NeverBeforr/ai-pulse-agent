@@ -39,12 +39,15 @@ jobs:
       - name: 展示真实运行状态
         if: always() && steps.digest.outcome != 'skipped'
         run: pulse status --config pulse.yaml --json
+      - name: 导出去除原文的状态快照
+        if: always()
+        run: python scripts/export_state.py
       - name: 保存去重与投递状态
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pulse-state
-          path: data/pulse.db*
+          path: data/checkpoint/pulse.db
           retention-days: 14
           if-no-files-found: ignore
       - name: 保留简报便于核查

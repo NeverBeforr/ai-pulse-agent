@@ -28,6 +28,17 @@ def test_summary_is_capped_and_card_is_bounded():
         render_card(digest, digest["items"])
 
 
+def test_ten_item_card_contains_all_items_and_stays_under_limit():
+    digest = fixture_digest()
+    digest["items"] = [
+        dict(digest["items"][index % 5], entry_id=index + 1, title=f"真实内容排版样例{index + 1}")
+        for index in range(10)
+    ]
+    card = render_card(digest, digest["items"])
+    assert sum(element["tag"] == "div" for element in card["card"]["elements"]) == 10
+    assert len(json.dumps(card, ensure_ascii=False).encode("utf-8")) < 28 * 1024
+
+
 def test_card_time_uses_configured_timezone():
     digest = fixture_digest()
     digest["created_at"] = "2026-10-30T00:00:00+00:00"

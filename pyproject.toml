@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-pulse-agent"
-version = "0.3.0"
+version = "0.4.0"
 description = "可自托管的每日中文简报引擎"
 readme = "README.md"
 authors = [{name = "NeverBefore"}]
@@ -25,6 +25,7 @@ dependencies = [
   "httpx>=0.27,<1", "feedparser>=6,<7", "beautifulsoup4>=4.12,<5",
   "pydantic-settings>=2.6,<3", "apscheduler>=3.10,<4", "tzdata",
   "openai>=1.60,<3", "pyyaml>=6,<7",
+  "trafilatura>=2,<3",
 ]
 
 [project.scripts]

@@ -33,6 +33,8 @@ def render_markdown(digest, items):
                 "来源：" + "、".join(source["name"] for source in item["sources"]),
                 "",
             ]
+            if item.get("reading", {}).get("status") in {"complete", "chunked_complete"}:
+                lines += ["阅读依据：" + item["evidence_status"] + "，已处理完整提取正文。", ""]
     if digest.get("offline"):
         lines += ["离线预览：未检查网络来源，未调用模型，未投递或更新去重状态。", ""]
     return "\n".join(lines)

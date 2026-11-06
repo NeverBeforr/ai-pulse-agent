@@ -2,8 +2,8 @@ version: 1
 timezone: Asia/Hong_Kong
 schedule: 08:00
 output:
-  items: 5
-  max_items: 8
+  items: 10
+  max_items: 10
   language: zh
   sections:
   - industry
@@ -39,3 +39,12 @@ sinks:
 state:
   path: ./data/pulse.db
   dedup_days: 7
+selection:
+  profile: 关注AI前沿变化、开发工具及能带来灵感的真实产品案例。行业变化与应用案例各半，排除纯融资、人事、广告和同质化套壳。
+  weights:
+    relevance: 1
+    impact: 1
+    usefulness: 1
+    novelty: 1
+  max_model_calls: 60
+  max_runtime_seconds: 600

@@ -104,30 +104,9 @@ async def collect_sources(config, store, run_id, network, since):
 
 async def generate_items(config, candidates, store, run_id, network, *, agent_mode=False):
     if not agent_mode:
-        from .generate import generate_single_pass
+        from .selection import build_briefing
 
-        result = await generate_single_pass(
-            config, candidates, store.delivered_history(config.state.dedup_days), store=store, run_id=run_id
-        )
-        allowed = {item["id"]: item for item in candidates}
-        items = []
-        for chosen in result.items:
-            original = allowed[chosen.entry_id]
-            evidence = [allowed[identity] for identity in chosen.evidence_ids]
-            items.append(
-                {
-                    **{key: original[key] for key in ("url", "kind", "published_at", "metrics", "growth")},
-                    "entry_id": chosen.entry_id,
-                    "section": chosen.section,
-                    "title": chosen.title,
-                    "summary": chosen.summary,
-                    "reason": chosen.reason,
-                    "evidence_status": chosen.evidence_status,
-                    "sources": list({s["id"]: s for item in evidence for s in item["sources"]}.values()),
-                    "evidence": [{"title": item["title"], "url": item["url"]} for item in evidence],
-                }
-            )
-        return items
+        return await build_briefing(config, candidates, store, run_id, network)
     settings = Settings(
         llm_base_url=config.model.base_url,
         llm_api_key=config.model.api_key.get_secret_value(),
@@ -140,7 +119,7 @@ async def generate_items(config, candidates, store, run_id, network, *, agent_mo
     for item in generated:
         if (
             item["section"] in config.output.sections
-            and counts[item["section"]] < 3
+            and counts[item["section"]] < config.output.section_limit()
             and len(selected) < config.output.items
         ):
             selected.append(item)
@@ -174,7 +153,7 @@ async def deliver(config, store, digest, run_id):
         state, code = "degraded", 1
     elif coverage["successful"] < coverage["total"] or sent < len(results):
         state, code = "partial", 1
-    elif len(digest["items"]) < config.output.items:
+    elif len(digest["items"]) < config.output.items or coverage.get("reading", {}).get("budget_exhausted"):
         state, code = "degraded", 1
     else:
         state, code = "success", 0
@@ -218,7 +197,7 @@ async def run_once(config, *, date=None, agent_mode=False):
                     return RunResult(4, "failed", run_id, coverage=coverage, message="所有来源采集失败")
                 entries = [
                     e
-                    for e in store.entries(since.isoformat())
+                    for e in store.entries(since.isoformat(), limit=None)
                     if datetime.fromisoformat((e["published_at"] or e["first_seen"]).replace("Z", "+00:00"))
                     <= end
                     and any(
@@ -227,8 +206,12 @@ async def run_once(config, *, date=None, agent_mode=False):
                     )
                 ]
                 candidates = rank_candidates(
-                    entries, store, store.recently_delivered(config.state.dedup_days)
-                )[:20]
+                    entries,
+                    store,
+                    store.recently_delivered(config.state.dedup_days),
+                    limit=20 if agent_mode else None,
+                    allow_uncertain=not agent_mode,
+                )
                 if not candidates:
                     store.finish_run(run_id, "failed", dict(coverage, error="去重后没有有效候选"))
                     return RunResult(4, "failed", run_id, coverage=coverage, message="去重后没有有效候选")
@@ -238,14 +221,30 @@ async def run_once(config, *, date=None, agent_mode=False):
                     config, candidates, store, run_id, network, agent_mode=agent_mode
                 )
                 if not items:
-                    store.finish_run(run_id, "failed", dict(coverage, error="模型没有选出有效内容"))
-                    return RunResult(4, "failed", run_id, coverage=coverage, message="模型没有选出有效内容")
+                    reading = next(
+                        (row["result"] for row in store.evaluations(run_id) if row["stage"] == "summary"), {}
+                    )
+                    store.finish_run(
+                        run_id, "failed", dict(coverage, reading=reading, error="没有完成正文阅读的合格内容")
+                    )
+                    return RunResult(
+                        4,
+                        "failed",
+                        run_id,
+                        coverage=dict(coverage, reading=reading),
+                        message="没有完成正文阅读的合格内容",
+                    )
                 coverage.update(format_version=FORMAT_VERSION, candidate_count=len(candidates))
+                reading = next(
+                    (row["result"] for row in store.evaluations(run_id) if row["stage"] == "summary"), None
+                )
+                if reading is not None:
+                    coverage["reading"] = reading
                 coverage["selected_sources"] = {
                     source: sum(any(s["name"] == source for s in item["sources"]) for item in items)
                     for source in sorted({s["name"] for item in items for s in item["sources"]})
                 }
-                usages = [usage for usage in store.usage() if usage["run_id"] == run_id]
+                usages = store.usage(run_id)
                 coverage["generation"] = {
                     "calls": len(usages),
                     "seconds": round(time.monotonic() - generation_started, 3),
@@ -256,6 +255,18 @@ async def run_once(config, *, date=None, agent_mode=False):
                     if usages and all(u["output_tokens"] is not None for u in usages)
                     else None,
                 }
+                coverage["generation"]["stages"] = {}
+                for stage in sorted({u["stage"] for u in usages}):
+                    stage_usage = [u for u in usages if u["stage"] == stage]
+                    coverage["generation"]["stages"][stage] = {
+                        "calls": len(stage_usage),
+                        **{
+                            field: sum(u[field] for u in stage_usage)
+                            if all(u[field] is not None for u in stage_usage)
+                            else None
+                            for field in ("input_tokens", "output_tokens")
+                        },
+                    }
                 digest_id = store.save_digest(target, "cloud", end.isoformat(), items, coverage)
             return await deliver(config, store, store.digest(digest_id), run_id)
         raise RuntimeError("客户端重建后仍无法完成采集")

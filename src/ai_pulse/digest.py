@@ -6,7 +6,9 @@ from hashlib import sha1
 from .editorial import SECTION_LIMIT, SECTIONS, section_for_entry
 
 
-def rank_candidates(entries: list[dict], store, covered: set[int], *, now=None) -> list[dict]:
+def rank_candidates(
+    entries: list[dict], store, covered: set[int], *, now=None, limit=20, allow_uncertain=False
+) -> list[dict]:
     now = now or datetime.now(UTC)
     eligible, groups = [], {}
     for original in entries:
@@ -14,7 +16,9 @@ def rank_candidates(entries: list[dict], store, covered: set[int], *, now=None) 
             continue
         section = section_for_entry(original)
         if section is None:
-            continue
+            if not allow_uncertain:
+                continue
+            section = "industry"
         item = dict(original, section=section)
         item["growth"] = store.growth(item["id"]) if item["kind"] == "repository" else None
         raw_time = item["published_at"] or item.get("first_seen")
@@ -43,9 +47,10 @@ def rank_candidates(entries: list[dict], store, covered: set[int], *, now=None) 
         recency = math.exp(-max(0, (now - published).total_seconds() / 3600) / 24) if published else 0
         official = int(any("官方" in s["channel"] for s in item["sources"]))
         item["rank_score"] = 0.45 * popularity + 0.20 * multi + 0.20 * recency + 0.15 * official
-    return sorted(
+    ranked = sorted(
         eligible, key=lambda item: (-item["rank_score"], sha1(item["title"].encode("utf-8")).hexdigest())
-    )[:20]
+    )
+    return ranked[:limit] if limit is not None else ranked
 
 
 def preview_digest(candidates: list[dict]) -> list[dict]:

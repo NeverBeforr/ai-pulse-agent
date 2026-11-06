@@ -25,6 +25,8 @@ class ExampleSource:
 
 CollectedItem至少需要title和公开url；尽量提供summary与带时区的published_at。没有可信时间时使用None，不把抓取时间冒充发布时间。返回空列表表示成功访问但没有匹配内容；结构不识别、认证失败等应抛SourceFailure或原始明确异常。
 
+0.4的feed_content仅保存RSS或Atom明确提供的正文，以及HN原生长帖正文；不要把短摘要复制到该字段充当全文。外链文章由正文读取器继续获取原文。
+
 ## 2. 加入包入口
 
 在src/ai_pulse/sources/__init__.py导入适配器，使装饰器实际执行。仅新建文件不会自动注册。

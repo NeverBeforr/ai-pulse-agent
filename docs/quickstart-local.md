@@ -24,6 +24,8 @@ pulse status --config pulse.local.yaml --json
 
 模型客户端使用SDK的标准网络环境，代理由部署环境中的HTTP_PROXY、HTTPS_PROXY、NO_PROXY等控制，程序不修改系统代理。
 
+0.4可用model.trust_env单独控制模型是否读取代理环境，默认true；本次本机联调配置为false以直连已配置的模型服务，网页采集仍沿用标准代理环境。
+
 ## 定时
 
 cron不一定继承交互式shell变量。可以把export语句写入仅自己可读的环境脚本，再在任务中加载；该脚本不要提交到仓库。

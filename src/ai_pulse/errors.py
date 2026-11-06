@@ -24,5 +24,9 @@ class GenerationError(RuntimeError):
     """模型调用或结果校验失败。"""
 
 
+class BudgetExceeded(GenerationError):
+    """本轮预算已用尽，允许保留已完成阅读的条目。"""
+
+
 class DeliveryError(RuntimeError):
     """简报没有被目标服务接受。"""

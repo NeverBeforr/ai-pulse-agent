@@ -118,6 +118,7 @@ def main(argv=None):
                     result["last_digest"] = {
                         "date": digest["local_date"],
                         "status": digest["status"],
+                        "reading": digest["coverage"].get("reading"),
                         "delivered": [
                             r["sink"].split(":", 1)[0]
                             for r in store.deliveries(digest["id"])

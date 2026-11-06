@@ -49,7 +49,7 @@ def test_legacy_migration_never_copies_secrets(tmp_path):
     legacy = tmp_path / "settings.json"
     legacy.write_text('{"llm_api_key":"old-secret","timezone":"Asia/Hong_Kong"}')
     target = init_config(tmp_path / "pulse.yaml", legacy)
-    text = target.read_text()
+    text = target.read_text(encoding="utf-8")
     assert "old-secret" not in text and "${LLM_API_KEY}" in text
     with pytest.raises(ConfigError, match="不会覆盖"):
         init_config(target)

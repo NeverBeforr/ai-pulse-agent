@@ -2,7 +2,9 @@
 
 [![离线检查](https://github.com/NeverBeforr/ai-pulse-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/NeverBeforr/ai-pulse-agent/actions/workflows/ci.yml)
 
-每天北京时间约8点，最多5条、每条最多140字的中文AI简报，推到你自己的飞书。
+每天北京时间约8点，阅读全文后生成最多10条中文AI简报，行业热点与产品案例各5条，推到你自己的飞书。
+
+main分支为0.4源码开发版，已包含全文流程；下面v0.3.0标签仍用于体验历史回放，不代表已安装0.4。尚未创建0.4版本Release。
 
 <img src="docs/assets/card.png" width="640" alt="2026年10月30日真实简报的历史回放卡片">
 
@@ -20,7 +22,7 @@ uvx --from git+https://github.com/NeverBeforr/ai-pulse-agent@v0.3.0 pulse demo
 
 ## 一次执行，完成后退出
 
-`pulse run`读取pulse.yaml，从RSS、Hacker News和TLDR公开归档获取内容，跨天去重，默认一次模型调用生成中文摘要，投递到用户自己的飞书或markdown文件，然后退出。没有后台服务和内置调度器。TLDR邮箱是可选来源。
+`pulse run`读取pulse.yaml，从RSS、Hacker News和TLDR公开归档发现文章，按兴趣初筛，读取并保存原文，模型依据正文复核和总结，再通过候补递补组合最多10条，投递到飞书或Markdown后退出。没有后台服务和内置调度器。TLDR邮箱是可选来源。
 
 首发部署使用GitHub Actions：在仓库填写LLM_API_KEY、FEISHU_WEBHOOK两个Secrets，以及LLM_BASE_URL、LLM_MODEL两个Variables。密钥只通过环境变量注入；首次手动验证后，再启用每天北京时间约8点的定时执行。详细设置在部署文档。
 
@@ -58,7 +60,9 @@ demo使用历史公开材料，经真实解析、临时存储与排序后，回�
 
 进程不驻留，去重和投递状态持久保存在SQLite。Actions通过同分支的状态制品恢复数据库，保留14天；制品过期或被删除可能导致重复推送。不承诺端到端严格恰好一次，详见部署文档。
 
-默认最多20个候选进入模型，正常只调用一次；JSON结构校验失败最多纠正一次。发送前按UTF-8字节数保守控制输入预算，服务商报告计数异常时会缩减候选，整个生成最多两次请求。摘要数字约束写入提示词，未宣称自动事实核验。
+主路径取消固定20候选和单次模型调用限制。初筛、全文阅读、长文笔记合成及最终选稿分别记录用量。正文超出单次预算时完整分段处理，未完成的内容不入选；每次结构或证据校验失败最多纠正一次。数字与引文检查不等于自动事实核验，宣传与社区估算仍须保留来源性质。
+
+兴趣画像、四维权重与整轮预算见[全文与选稿说明](docs/fulltext.md)。预算是资源约束，不是质量最优值；材料不足或预算用尽时明确少报。
 
 主路径支持RSS/Atom、HN、TLDR公开归档与只读IMAP邮件。公众号抓取、SMTP和Cloudflare运行时尚未实现。旧Web与多轮agent代码保留但冻结，不是默认部署路径。
 
@@ -80,7 +84,8 @@ pulse run --dry-run --config tests/fixtures/pulse.yaml
 
 ## 资料
 
-- [v0.3改造规格](docs/REFACTOR_SPEC_v0.3.md)
+- [全文与十条简报方案](docs/FULLTEXT_BRIEFING_PLAN.md) · [全文与选稿说明](docs/fulltext.md)
+- [v0.3历史改造规格](docs/REFACTOR_SPEC_v0.3.md)
 - [本地与迁移说明](docs/quickstart-local.md)
 - [Actions部署说明](docs/quickstart-actions.md)
 - [变更记录](CHANGELOG.md)

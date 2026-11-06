@@ -1,3 +1,4 @@
+import hashlib
 import json
 import sqlite3
 from contextlib import closing, contextmanager
@@ -59,6 +60,12 @@ class Store:
 
     def _migrate(self):
         with self.connection() as db:
+            entry_columns = {row["name"] for row in db.execute("PRAGMA table_info(entries)")}
+            if "feed_content" not in entry_columns:
+                db.execute("ALTER TABLE entries ADD COLUMN feed_content TEXT NOT NULL DEFAULT ''")
+            usage_columns = {row["name"] for row in db.execute("PRAGMA table_info(model_usage)")}
+            if "stage" not in usage_columns:
+                db.execute("ALTER TABLE model_usage ADD COLUMN stage TEXT NOT NULL DEFAULT 'legacy'")
             columns = {row["name"] for row in db.execute("PRAGMA table_info(digests)")}
             for name, definition in {
                 "status": "TEXT NOT NULL DEFAULT 'ok'",
@@ -77,7 +84,19 @@ class Store:
                     entry_id INTEGER PRIMARY KEY REFERENCES entries(id), digest_id INTEGER NOT NULL,
                     delivered_at TEXT NOT NULL
                 );
-                PRAGMA user_version=3;
+                CREATE TABLE IF NOT EXISTS article_contents (
+                    entry_id INTEGER PRIMARY KEY REFERENCES entries(id), discovery_url TEXT NOT NULL,
+                    final_url TEXT NOT NULL, original_url TEXT, method TEXT NOT NULL,
+                    status TEXT NOT NULL, text TEXT NOT NULL DEFAULT '', content_hash TEXT NOT NULL,
+                    fetched_at TEXT NOT NULL, error TEXT NOT NULL DEFAULT ''
+                );
+                CREATE TABLE IF NOT EXISTS evaluations (
+                    id INTEGER PRIMARY KEY, run_id INTEGER NOT NULL REFERENCES runs(id),
+                    entry_id INTEGER NOT NULL REFERENCES entries(id), stage TEXT NOT NULL,
+                    status TEXT NOT NULL, result TEXT NOT NULL DEFAULT '{}', error TEXT NOT NULL DEFAULT '',
+                    UNIQUE(run_id,entry_id,stage)
+                );
+                PRAGMA user_version=4;
             """)
             db.execute("UPDATE runs SET state='aborted' WHERE state='interrupted'")
 
@@ -184,6 +203,9 @@ class Store:
                 )
                 entry_id = cursor.lastrowid
             db.execute("INSERT OR IGNORE INTO entry_sources VALUES(?,?)", (entry_id, source_id))
+            feed_content = item.get("feed_content", "")
+            if feed_content:
+                db.execute("UPDATE entries SET feed_content=? WHERE id=?", (feed_content, entry_id))
             if item["kind"] == "repository" and isinstance(item["metrics"].get("stars"), int):
                 db.execute(
                     "INSERT INTO repo_snapshots(entry_id,captured_at,stars) VALUES(?,?,?)",
@@ -191,7 +213,7 @@ class Store:
                 )
             return entry_id
 
-    def entries(self, since: str | None = None) -> list[dict]:
+    def entries(self, since: str | None = None, *, limit=400) -> list[dict]:
         with self.connection() as db:
             query = "SELECT * FROM entries"
             args = ()
@@ -201,7 +223,8 @@ class Store:
                     "(kind='repository' AND updated_at>=?)"
                 )
                 args = (since, since)
-            rows = [dict(row) for row in db.execute(query + " ORDER BY updated_at DESC LIMIT 400", args)]
+            suffix = " ORDER BY updated_at DESC" + (f" LIMIT {int(limit)}" if limit is not None else "")
+            rows = [dict(row) for row in db.execute(query + suffix, args)]
             source_map = {}
             for row in db.execute(
                 "SELECT es.entry_id,s.id,s.name,s.channel,s.kind FROM entry_sources es JOIN sources s "
@@ -335,18 +358,30 @@ class Store:
             row["detail"] = json.loads(row["detail"])
         return rows
 
-    def usage(self) -> list[dict]:
+    def usage(self, run_id=None) -> list[dict]:
         with self.connection() as db:
+            if run_id is not None:
+                return [
+                    dict(row)
+                    for row in db.execute("SELECT * FROM model_usage WHERE run_id=? ORDER BY id", (run_id,))
+                ]
             return [dict(row) for row in db.execute("SELECT * FROM model_usage ORDER BY id DESC LIMIT 100")]
 
     def record_usage(
-        self, run_id: int, model: str, inputs: int | None, outputs: int | None, cost: float | None
+        self,
+        run_id: int,
+        model: str,
+        inputs: int | None,
+        outputs: int | None,
+        cost: float | None,
+        *,
+        stage="legacy",
     ) -> None:
         with self.connection() as db:
             db.execute(
                 "INSERT INTO model_usage(run_id,model,created_at,input_tokens,output_tokens,"
-                "estimated_cost) VALUES(?,?,?,?,?,?)",
-                (run_id, model, utcnow(), inputs, outputs, cost),
+                "estimated_cost,stage) VALUES(?,?,?,?,?,?,?)",
+                (run_id, model, utcnow(), inputs, outputs, cost, stage),
             )
 
     def mark_delivered(self, entry_ids: list[int], digest_id: int):
@@ -424,11 +459,99 @@ class Store:
     def delivered_history(self, days: int) -> list[dict]:
         cutoff = (datetime.now(UTC) - timedelta(days=days)).isoformat()
         with self.connection() as db:
-            return [
+            history = [
                 dict(row)
                 for row in db.execute(
-                    "SELECT e.title,e.url FROM delivered_entries d JOIN entries e ON e.id=d.entry_id "
-                    "WHERE d.delivered_at>=? ORDER BY d.delivered_at DESC LIMIT 20",
+                    "SELECT e.id AS entry_id,e.title,e.url,d.digest_id,g.items AS digest_items FROM delivered_entries d JOIN entries e ON e.id=d.entry_id JOIN digests g ON g.id=d.digest_id "
+                    "WHERE d.delivered_at>=? ORDER BY d.delivered_at DESC",
                     (cutoff,),
                 )
             ]
+        for row in history:
+            items = json.loads(row.pop("digest_items"))
+            previous = next((item for item in items if item["entry_id"] == row["entry_id"]), {})
+            row.update(
+                title=previous.get("title", row["title"]),
+                summary=previous.get("summary", ""),
+                event_key=previous.get("event_key", ""),
+            )
+        return history
+
+    def save_content(self, entry_id, content):
+        payload = dict(
+            content,
+            entry_id=entry_id,
+            content_hash=hashlib.sha256(content["text"].encode()).hexdigest(),
+            fetched_at=utcnow(),
+        )
+        with self.connection() as db:
+            db.execute(
+                "INSERT INTO article_contents(entry_id,discovery_url,final_url,original_url,method,status,text,content_hash,fetched_at,error) "
+                "VALUES(:entry_id,:discovery_url,:final_url,:original_url,:method,:status,:text,:content_hash,:fetched_at,:error) "
+                "ON CONFLICT(entry_id) DO UPDATE SET final_url=excluded.final_url,original_url=excluded.original_url,"
+                "method=excluded.method,status=excluded.status,text=excluded.text,content_hash=excluded.content_hash,"
+                "fetched_at=excluded.fetched_at,error=excluded.error",
+                payload,
+            )
+        return payload
+
+    def content(self, entry_id):
+        with self.connection() as db:
+            row = db.execute("SELECT * FROM article_contents WHERE entry_id=?", (entry_id,)).fetchone()
+            return dict(row) if row else None
+
+    def record_evaluation(self, run_id, entry_id, stage, status, result=None, error=""):
+        with self.connection() as db:
+            db.execute(
+                "INSERT INTO evaluations(run_id,entry_id,stage,status,result,error) VALUES(?,?,?,?,?,?) "
+                "ON CONFLICT(run_id,entry_id,stage) DO UPDATE SET status=excluded.status,result=excluded.result,error=excluded.error",
+                (run_id, entry_id, stage, status, json.dumps(result or {}, ensure_ascii=False), error),
+            )
+
+    def evaluations(self, run_id):
+        with self.connection() as db:
+            rows = [
+                dict(row)
+                for row in db.execute("SELECT * FROM evaluations WHERE run_id=? ORDER BY id", (run_id,))
+            ]
+        for row in rows:
+            row["result"] = json.loads(row["result"])
+        return rows
+
+    def export_state(self, target):
+        """一致快照排除来源原文与逐篇模型证据，只上传恢复运行所需状态。"""
+        target = Path(target)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if target.resolve() == self.path.resolve():
+            raise ValueError("状态导出不能覆盖正在使用的数据库")
+        with closing(sqlite3.connect(self.path)) as source, closing(sqlite3.connect(target)) as snapshot:
+            source.backup(snapshot)
+            with snapshot:
+                snapshot.execute("DELETE FROM article_contents")
+                snapshot.execute("DELETE FROM evaluations")
+                snapshot.execute("UPDATE entries SET summary='',feed_content=''")
+                for identity, raw in snapshot.execute("SELECT id,items FROM digests").fetchall():
+                    items = json.loads(raw)
+                    for item in items:
+                        item.pop("quotes", None)
+                    snapshot.execute(
+                        "UPDATE digests SET items=? WHERE id=?",
+                        (json.dumps(items, ensure_ascii=False), identity),
+                    )
+            snapshot.execute("PRAGMA journal_mode=DELETE")
+            snapshot.execute("VACUUM")
+
+    def cached_review(self, entry_id, content_hash, signature):
+        with self.connection() as db:
+            rows = db.execute(
+                "SELECT result FROM evaluations WHERE entry_id=? AND stage='read' AND status IN ('accepted','rejected') ORDER BY id DESC",
+                (entry_id,),
+            ).fetchall()
+        for row in rows:
+            result = json.loads(row["result"])
+            if (
+                result.get("signature") == signature
+                and result.get("reading", {}).get("content_hash") == content_hash
+            ):
+                return result
+        return None

@@ -30,6 +30,7 @@ def parse_stories(stories) -> list[CollectedItem]:
                 url=canonical_url(link),
                 kind="repository" if is_repo else "news",
                 summary=clean_text(story.get("text", "")),
+                feed_content=story.get("text", "") if not story.get("url") else "",
                 published_at=datetime.fromtimestamp(story["time"], UTC).isoformat(),
                 metrics={
                     "hn_score": story.get("score", 0),
